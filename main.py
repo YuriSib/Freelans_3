@@ -81,7 +81,7 @@ async def settings(page_num, rand_proxy):
             return await resp.text(encoding="utf-8")
 
 
-async def get_property_settings(url, rand_proxy):
+async def get_property_settings(url):#, rand_proxy):
     async with aiohttp.ClientSession() as session:
         cookies = {
             'spravka': 'dD0xNzAxNDIxNDQ1O2k9OTUuMzIuNzMuMTMwO0Q9MUMyOUNDMzU2RjQwMjI4QTQ1NjhBQzQ2RTc0MTVEQ0IyOUJDMTZGMTM3N0FFRENCQTAwNTFFMjhCRjFENUY3REU2QzI1MzVGMUYyQjUzREQ5NTQ0RjQyNEIxQzdBQUE5NjFBOUJGMjMxMkIzNUY1Njc2MEVGMUY3Q0FGMkYzNDhEM0U4MUQ4MTYwNzVBNDM0O3U9MTcwMTQyMTQ0NTI3ODY4Njk5MDtoPWMxNGJhMTI3Yzk0YjUzYjM2MmFhYmNiZjMzOWRkMTdk',
@@ -130,8 +130,7 @@ async def get_property_settings(url, rand_proxy):
             # 'TE': 'trailers',
         }
 
-        async with session.get(url, cookies=cookies, headers=headers,
-                               proxy=f"http://{rand_proxy}") as resp:
+        async with session.get(url, cookies=cookies, headers=headers)  as resp:#, proxy=f"http://{rand_proxy}") as resp:
             return await resp.text(encoding="utf-8")
 
 
@@ -160,10 +159,10 @@ async def get_property():
 
     cnt = 171
     for link in data_list:
-        rand_proxy = random.choice(PROXY_LIST)
+        # rand_proxy = random.choice(PROXY_LIST)
         mark = link[0].split(' ')[0]
         model = ' '.join(link[0].split(' ')[1:])
-        response = await get_property_settings(link[1], rand_proxy)
+        response = await get_property_settings(link[1])#, rand_proxy)
         soup = BeautifulSoup(response, "lxml")
         html_year = soup.find('li', class_='CardInfoRow CardInfoRow_year')
         year = html_year.find_all('span', class_='CardInfoRow__cell')[1].get_text(strip=True) if html_year else 0

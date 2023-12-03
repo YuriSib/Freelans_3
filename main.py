@@ -256,7 +256,7 @@ async def get_property():
         if year != '2023':
             continue
         try:
-            load = soup.text.split('Г/подъёмность')[1].split(' ')[0].split('\n')[0].replace(' т', ''
+            load = soup.text.split('Г/подъёмность')[1].split(' ')[0].split('\n')[0].replace(' т', '')
             print(load)
         except Exception:
             load = 0

@@ -245,16 +245,19 @@ async def get_property():
         #     dirty_text = 0
         try:
             price = soup.text.split('Цена с НДС')[0].split('\n')[-2].replace(' ', '').replace('₽', '')
+            print(price)
         except Exception:
             price = 0
         try:
             year = soup.text.split('выпуска')[1].split(' ')[0].split('\n')[0]
+            print(year)
         except Exception:
             year = 0
         if year != '2023':
             continue
         try:
-            load = soup.text.split('Г/подъёмность')[1].split(' ')[0].split('\n')[0].replace(' т', '')
+            load = soup.text.split('Г/подъёмность')[1].split(' ')[0].split('\n')[0].replace(' т', ''
+            print(load)
         except Exception:
             load = 0
         try:

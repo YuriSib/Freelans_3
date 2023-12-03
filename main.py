@@ -239,42 +239,42 @@ async def get_property():
         # response = await get_property_settings(link[1], rand_proxy)
         soup = useragent_soup(link[1])
         # soup = BeautifulSoup(response, "lxml")
+        # try:
+        #     dirty_text = soup.find(text=lambda t: 'Год выпуска' in t)
+        # except Exception:
+        #     dirty_text = 0
         try:
-            dirty_text = soup.find(text=lambda t: 'Год выпуска' in t)
-        except Exception:
-            dirty_text = 0
-        try:
-            price = dirty_text.text.split('Цена с НДС')[0].split('\n')[-2].replace(' ', '').replace('₽', '')
+            price = soup.text.split('Цена с НДС')[0].split('\n')[-2].replace(' ', '').replace('₽', '')
         except Exception:
             price = 0
         try:
-            year = dirty_text.text.split('выпуска')[1].split(' ')[0].split('\n')[0]
+            year = soup.text.split('выпуска')[1].split(' ')[0].split('\n')[0]
         except Exception:
             year = 0
         if year != '2023':
             continue
         try:
-            load = dirty_text.text.split('Г/подъёмность')[1].split(' ')[0].split('\n')[0].replace(' т', '')
+            load = soup.text.split('Г/подъёмность')[1].split(' ')[0].split('\n')[0].replace(' т', '')
         except Exception:
             load = 0
         try:
-            brake = dirty_text.text.split('тормозов')[1].split(' ')[0].split('\n')[0]
+            brake = soup.text.split('тормозов')[1].split(' ')[0].split('\n')[0]
         except Exception:
             brake = 0
         try:
-            suspension = dirty_text.text.split('подвески')[1].split(' ')[0].split('\n')[0]
+            suspension = soup.text.split('подвески')[1].split(' ')[0].split('\n')[0]
         except Exception:
             suspension = 0
         try:
-            type_ = dirty_text.text.split('прицепа')[1].split('\n')[0]
+            type_ = soup.text.split('прицепа')[1].split('\n')[0]
         except Exception:
             type_ = 0
         try:
-            axis = dirty_text.text.split('Количество осей')[1].split('\n')[0]
+            axis = soup.text.split('Количество осей')[1].split('\n')[0]
         except Exception:
             axis = 0
         try:
-            dirty_city = dirty_text.text.split('Цена с НДС')[1].split('\n')[3]
+            dirty_city = soup.text.split('Цена с НДС')[1].split('\n')[3]
             city = re.findall('[А-Я][^А-Я]*', dirty_city)[0]
         except Exception:
             city = 0
@@ -285,7 +285,7 @@ async def get_property():
 
         up_axis = 'нет'
         try:
-            if 'одъёмная ось' in dirty_text:
+            if 'одъёмная ось' in soup:
                 up_axis = 'есть'
         except Exception:
             region = city

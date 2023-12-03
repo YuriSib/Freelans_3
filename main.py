@@ -5,8 +5,10 @@ import aiohttp
 import pickle
 import openpyxl
 from fake_useragent import UserAgent
-
+import requests
 from location import get_location
+from requests_html import HTMLSession
+import re
 
 
 with open("proxy.txt") as file:
@@ -84,60 +86,124 @@ async def settings(page_num, rand_proxy):
 
 async def get_property_settings(url, rand_proxy):
     async with aiohttp.ClientSession() as session:
-        ua = UserAgent()
-        user_agent = ua.random
         cookies = {
             'spravka': 'dD0xNzAxNDIxNDQ1O2k9OTUuMzIuNzMuMTMwO0Q9MUMyOUNDMzU2RjQwMjI4QTQ1NjhBQzQ2RTc0MTVEQ0IyOUJDMTZGMTM3N0FFRENCQTAwNTFFMjhCRjFENUY3REU2QzI1MzVGMUYyQjUzREQ5NTQ0RjQyNEIxQzdBQUE5NjFBOUJGMjMxMkIzNUY1Njc2MEVGMUY3Q0FGMkYzNDhEM0U4MUQ4MTYwNzVBNDM0O3U9MTcwMTQyMTQ0NTI3ODY4Njk5MDtoPWMxNGJhMTI3Yzk0YjUzYjM2MmFhYmNiZjMzOWRkMTdk',
-            '_yasc': 'Ri3P0x8Bm2SfhdWuLV90MFqVbOf6h1lxaARVvjPy0i7TSn+EYNuSO+nCwZM9Fcdn3feIhlmWgV0=',
+            '_yasc': 'Z8ito11h5tGI5jm0NtCLX91IeaTFO7V/DawtMmY2RILBrY4r+LxPoXMZ6tvpUMhqSsvKOOgoBqE=',
+            'gdpr': '0',
+            '_ym_visorc': 'b',
             'suid': '1fcc5294ad3df71178d0da0a8a412119.188e4f223b937631fab3e2f6573b83cb',
+            '_csrf_token': '1aed5afef4e512162132d613fe6e0fddf9112a4247b84622',
             'autoru_sid': 'a^%^3Ag6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c^%^7C1701421445487.604800.STEgpmoYnjmdyrYH85l5hw.ATkLP66QoTuhm3Zq5XyF2Ie1PLZGqdOio7wYM-jhwx0',
             'autoruuid': 'g6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c',
+            'from_lifetime': '1701422479248',
+            'from': 'direct',
+            'autoru_sso_blocked': '1',
+            'Session_id': 'noauth:1701421445',
+            'sessar': '1.1184.CiA95iTx5Q98Ew3VgO38HNc3S9KfDkP4yTvTAuRYBYawfg.9fCnR83NZZ7Cg5-KdL838qcpw_aZ5t_MMI6RbOJQo3A',
             'yandex_login': '',
-            'i': 'Ha19B7QYaEgnr1f1yJah2/ALH7Q/HcLfECpXtbr4k0gM3i67gKSE3zryYUGQAqMUz6UUBJSvE9NcAKtjcDl0DDOD+qw=',
-            'yandexuid': '5030237351701541850',
-            'mda2_beacon': '1701557616250',
-            'layout-config': '{screen_height:960,screen_width:1708,win_width:1707.5,win_height:306.25}',
+            'ys': 'c_chck.3192317861',
+            'i': 'XteuW9UhfJ6HFrsugRX3jGL3Bjr57t9zIHP07IhF0o5kcpYQ8ADX89Vk4zSSMvuxiBOiRmJ0nsnMMdu8tXQvpSrDSLs=',
+            'yandexuid': '1765520041701333029',
+            'mda2_beacon': '1701421445786',
+            'sso_status': 'sso.passport.yandex.ru:synchronized_no_beacon',
+            'layout-config': '{screen_height:960,screen_width:1708,win_width:1686.25,win_height:273.75}',
+            '_arsus': 'true',
+            'count-visits': '3',
             '_ym_uid': '1701421443933204740',
-            '_ym_d': '1701557618',
+            '_ym_d': '1701421641',
+            '_ym_isad': '2',
+            'yaPassportTryAutologin': '1',
             'popups-dr-shown-count': '1',
             'fp': 'b8b930ff929cc40b202f0caaeb2af241^%^7C1701421456264',
-            'cycada': 'rQeHqcpJX3gJTo7dibnjqSoGuewZ52Ht1fvNM5rDEfo=',
-            'autoru-visits-count': '4',
-            '_csrf_token': '5fccd8d506043cb52f4059266bd99ac1477899be94ef5dee',
-            'from_lifetime': '1701557624474',
-            'from': 'direct',
-            'ys': 'c_chck.158953186',
-            'yaPassportTryAutologin': '1',
-            'gdpr': '0',
-            '_ym_isad': '2',
-            'autoru_sso_blocked': '1',
-            'Session_id': 'noauth:1701557616',
-            'sessar': '1.1184.CiBJC8XWT7D_rSQjFlIDY8pXzmVOxv_xVNPiFnGz6Su_UA.nP6qOvtxCw5PlCe6rRZGvvyN08J4BI7DgT_Ht1Y0iAQ',
-            'sso_status': 'sso.passport.yandex.ru:synchronized_no_beacon',
+            'cycada': 'P7mdXXLuSRcHx26DoWg4gyoGuewZ52Ht1fvNM5rDEfo=',
+            'autoru-visits-count': '1',
             'autoru-visits-session-unexpired': '1',
-            'count-visits': '1',
         }
 
         headers = {
-            'User-Agent': user_agent,
-            # 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
-            # 'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
-            # # 'Accept-Encoding': 'gzip, deflate, br',
-            # 'Referer': 'https://sso.auto.ru/',
-            # 'Connection': 'keep-alive',
-            # # 'Cookie': 'spravka=dD0xNzAxNDIxNDQ1O2k9OTUuMzIuNzMuMTMwO0Q9MUMyOUNDMzU2RjQwMjI4QTQ1NjhBQzQ2RTc0MTVEQ0IyOUJDMTZGMTM3N0FFRENCQTAwNTFFMjhCRjFENUY3REU2QzI1MzVGMUYyQjUzREQ5NTQ0RjQyNEIxQzdBQUE5NjFBOUJGMjMxMkIzNUY1Njc2MEVGMUY3Q0FGMkYzNDhEM0U4MUQ4MTYwNzVBNDM0O3U9MTcwMTQyMTQ0NTI3ODY4Njk5MDtoPWMxNGJhMTI3Yzk0YjUzYjM2MmFhYmNiZjMzOWRkMTdk; _yasc=Ri3P0x8Bm2SfhdWuLV90MFqVbOf6h1lxaARVvjPy0i7TSn+EYNuSO+nCwZM9Fcdn3feIhlmWgV0=; suid=1fcc5294ad3df71178d0da0a8a412119.188e4f223b937631fab3e2f6573b83cb; autoru_sid=a^%^3Ag6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c^%^7C1701421445487.604800.STEgpmoYnjmdyrYH85l5hw.ATkLP66QoTuhm3Zq5XyF2Ie1PLZGqdOio7wYM-jhwx0; autoruuid=g6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c; yandex_login=; i=Ha19B7QYaEgnr1f1yJah2/ALH7Q/HcLfECpXtbr4k0gM3i67gKSE3zryYUGQAqMUz6UUBJSvE9NcAKtjcDl0DDOD+qw=; yandexuid=5030237351701541850; mda2_beacon=1701557616250; layout-config={screen_height:960,screen_width:1708,win_width:1707.5,win_height:306.25}; _ym_uid=1701421443933204740; _ym_d=1701557618; popups-dr-shown-count=1; fp=b8b930ff929cc40b202f0caaeb2af241^%^7C1701421456264; cycada=rQeHqcpJX3gJTo7dibnjqSoGuewZ52Ht1fvNM5rDEfo=; autoru-visits-count=4; _csrf_token=5fccd8d506043cb52f4059266bd99ac1477899be94ef5dee; from_lifetime=1701557624474; from=direct; ys=c_chck.158953186; yaPassportTryAutologin=1; gdpr=0; _ym_isad=2; autoru_sso_blocked=1; Session_id=noauth:1701557616; sessar=1.1184.CiBJC8XWT7D_rSQjFlIDY8pXzmVOxv_xVNPiFnGz6Su_UA.nP6qOvtxCw5PlCe6rRZGvvyN08J4BI7DgT_Ht1Y0iAQ; sso_status=sso.passport.yandex.ru:synchronized_no_beacon; autoru-visits-session-unexpired=1; count-visits=1',
-            # 'Upgrade-Insecure-Requests': '1',
-            # 'Sec-Fetch-Dest': 'document',
-            # 'Sec-Fetch-Mode': 'navigate',
-            # 'Sec-Fetch-Site': 'same-site',
-            # 'Sec-Fetch-User': '?1',
-            # # Requests doesn't support trailers
-            # # 'TE': 'trailers',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:120.0) Gecko/20100101 Firefox/120.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
+            # 'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            # 'Cookie': 'spravka=dD0xNzAxNDIxNDQ1O2k9OTUuMzIuNzMuMTMwO0Q9MUMyOUNDMzU2RjQwMjI4QTQ1NjhBQzQ2RTc0MTVEQ0IyOUJDMTZGMTM3N0FFRENCQTAwNTFFMjhCRjFENUY3REU2QzI1MzVGMUYyQjUzREQ5NTQ0RjQyNEIxQzdBQUE5NjFBOUJGMjMxMkIzNUY1Njc2MEVGMUY3Q0FGMkYzNDhEM0U4MUQ4MTYwNzVBNDM0O3U9MTcwMTQyMTQ0NTI3ODY4Njk5MDtoPWMxNGJhMTI3Yzk0YjUzYjM2MmFhYmNiZjMzOWRkMTdk; _yasc=Z8ito11h5tGI5jm0NtCLX91IeaTFO7V/DawtMmY2RILBrY4r+LxPoXMZ6tvpUMhqSsvKOOgoBqE=; gdpr=0; _ym_visorc=b; suid=1fcc5294ad3df71178d0da0a8a412119.188e4f223b937631fab3e2f6573b83cb; _csrf_token=1aed5afef4e512162132d613fe6e0fddf9112a4247b84622; autoru_sid=a^%^3Ag6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c^%^7C1701421445487.604800.STEgpmoYnjmdyrYH85l5hw.ATkLP66QoTuhm3Zq5XyF2Ie1PLZGqdOio7wYM-jhwx0; autoruuid=g6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c; from_lifetime=1701422479248; from=direct; autoru_sso_blocked=1; Session_id=noauth:1701421445; sessar=1.1184.CiA95iTx5Q98Ew3VgO38HNc3S9KfDkP4yTvTAuRYBYawfg.9fCnR83NZZ7Cg5-KdL838qcpw_aZ5t_MMI6RbOJQo3A; yandex_login=; ys=c_chck.3192317861; i=XteuW9UhfJ6HFrsugRX3jGL3Bjr57t9zIHP07IhF0o5kcpYQ8ADX89Vk4zSSMvuxiBOiRmJ0nsnMMdu8tXQvpSrDSLs=; yandexuid=1765520041701333029; mda2_beacon=1701421445786; sso_status=sso.passport.yandex.ru:synchronized_no_beacon; layout-config={screen_height:960,screen_width:1708,win_width:1686.25,win_height:273.75}; _arsus=true; count-visits=3; _ym_uid=1701421443933204740; _ym_d=1701421641; _ym_isad=2; yaPassportTryAutologin=1; popups-dr-shown-count=1; fp=b8b930ff929cc40b202f0caaeb2af241^%^7C1701421456264; cycada=P7mdXXLuSRcHx26DoWg4gyoGuewZ52Ht1fvNM5rDEfo=; autoru-visits-count=1; autoru-visits-session-unexpired=1',
+            'Upgrade-Insecure-Requests': '1',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'none',
+            'Sec-Fetch-User': '?1',
+            # Requests doesn't support trailers
+            # 'TE': 'trailers',
         }
 
         async with session.get(url, cookies=cookies, headers=headers,
                                proxy=f"http://{rand_proxy}") as resp:
             return await resp.text(encoding="utf-8")
+
+
+def useragent_soup(url_):
+#     rand_proxy = {
+#     'https': 'http://2BARgNug:RwNAgyw6@194.226.115.221:63626',
+#     # 'https': 'https://2BARgNug:RwNAgyw6@193.232.205.103:64904',
+# }
+    cookies = {
+        'spravka': 'dD0xNzAxNDIxNDQ1O2k9OTUuMzIuNzMuMTMwO0Q9MUMyOUNDMzU2RjQwMjI4QTQ1NjhBQzQ2RTc0MTVEQ0IyOUJDMTZGMTM3N0FFRENCQTAwNTFFMjhCRjFENUY3REU2QzI1MzVGMUYyQjUzREQ5NTQ0RjQyNEIxQzdBQUE5NjFBOUJGMjMxMkIzNUY1Njc2MEVGMUY3Q0FGMkYzNDhEM0U4MUQ4MTYwNzVBNDM0O3U9MTcwMTQyMTQ0NTI3ODY4Njk5MDtoPWMxNGJhMTI3Yzk0YjUzYjM2MmFhYmNiZjMzOWRkMTdk',
+        '_yasc': 'Z8ito11h5tGI5jm0NtCLX91IeaTFO7V/DawtMmY2RILBrY4r+LxPoXMZ6tvpUMhqSsvKOOgoBqE=',
+        'gdpr': '0',
+        '_ym_visorc': 'b',
+        'suid': '1fcc5294ad3df71178d0da0a8a412119.188e4f223b937631fab3e2f6573b83cb',
+        '_csrf_token': '1aed5afef4e512162132d613fe6e0fddf9112a4247b84622',
+        'autoru_sid': 'a^%^3Ag6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c^%^7C1701421445487.604800.STEgpmoYnjmdyrYH85l5hw.ATkLP66QoTuhm3Zq5XyF2Ie1PLZGqdOio7wYM-jhwx0',
+        'autoruuid': 'g6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c',
+        'from_lifetime': '1701422479248',
+        'from': 'direct',
+        'autoru_sso_blocked': '1',
+        'Session_id': 'noauth:1701421445',
+        'sessar': '1.1184.CiA95iTx5Q98Ew3VgO38HNc3S9KfDkP4yTvTAuRYBYawfg.9fCnR83NZZ7Cg5-KdL838qcpw_aZ5t_MMI6RbOJQo3A',
+        'yandex_login': '',
+        'ys': 'c_chck.3192317861',
+        'i': 'XteuW9UhfJ6HFrsugRX3jGL3Bjr57t9zIHP07IhF0o5kcpYQ8ADX89Vk4zSSMvuxiBOiRmJ0nsnMMdu8tXQvpSrDSLs=',
+        'yandexuid': '1765520041701333029',
+        'mda2_beacon': '1701421445786',
+        'sso_status': 'sso.passport.yandex.ru:synchronized_no_beacon',
+        'layout-config': '{screen_height:960,screen_width:1708,win_width:1686.25,win_height:273.75}',
+        '_arsus': 'true',
+        'count-visits': '3',
+        '_ym_uid': '1701421443933204740',
+        '_ym_d': '1701421641',
+        '_ym_isad': '2',
+        'yaPassportTryAutologin': '1',
+        'popups-dr-shown-count': '1',
+        'fp': 'b8b930ff929cc40b202f0caaeb2af241^%^7C1701421456264',
+        'cycada': 'P7mdXXLuSRcHx26DoWg4gyoGuewZ52Ht1fvNM5rDEfo=',
+        'autoru-visits-count': '1',
+        'autoru-visits-session-unexpired': '1',
+    }
+
+    ua = UserAgent()
+    user_agent = ua.random
+    headers = {
+        'User-Agent': user_agent,
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'ru-RU,ru;q=0.8,en-US;q=0.5,en;q=0.3',
+        # 'Accept-Encoding': 'gzip, deflate, br',
+        'Connection': 'keep-alive',
+        # 'Cookie': 'spravka=dD0xNzAxNDIxNDQ1O2k9OTUuMzIuNzMuMTMwO0Q9MUMyOUNDMzU2RjQwMjI4QTQ1NjhBQzQ2RTc0MTVEQ0IyOUJDMTZGMTM3N0FFRENCQTAwNTFFMjhCRjFENUY3REU2QzI1MzVGMUYyQjUzREQ5NTQ0RjQyNEIxQzdBQUE5NjFBOUJGMjMxMkIzNUY1Njc2MEVGMUY3Q0FGMkYzNDhEM0U4MUQ4MTYwNzVBNDM0O3U9MTcwMTQyMTQ0NTI3ODY4Njk5MDtoPWMxNGJhMTI3Yzk0YjUzYjM2MmFhYmNiZjMzOWRkMTdk; _yasc=Z8ito11h5tGI5jm0NtCLX91IeaTFO7V/DawtMmY2RILBrY4r+LxPoXMZ6tvpUMhqSsvKOOgoBqE=; gdpr=0; _ym_visorc=b; suid=1fcc5294ad3df71178d0da0a8a412119.188e4f223b937631fab3e2f6573b83cb; _csrf_token=1aed5afef4e512162132d613fe6e0fddf9112a4247b84622; autoru_sid=a^%^3Ag6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c^%^7C1701421445487.604800.STEgpmoYnjmdyrYH85l5hw.ATkLP66QoTuhm3Zq5XyF2Ie1PLZGqdOio7wYM-jhwx0; autoruuid=g6569a1852ijtl0p4lf31aavkcnhvvmd.3ee4ef13bed61551f74d5aa4cff1d29c; from_lifetime=1701422479248; from=direct; autoru_sso_blocked=1; Session_id=noauth:1701421445; sessar=1.1184.CiA95iTx5Q98Ew3VgO38HNc3S9KfDkP4yTvTAuRYBYawfg.9fCnR83NZZ7Cg5-KdL838qcpw_aZ5t_MMI6RbOJQo3A; yandex_login=; ys=c_chck.3192317861; i=XteuW9UhfJ6HFrsugRX3jGL3Bjr57t9zIHP07IhF0o5kcpYQ8ADX89Vk4zSSMvuxiBOiRmJ0nsnMMdu8tXQvpSrDSLs=; yandexuid=1765520041701333029; mda2_beacon=1701421445786; sso_status=sso.passport.yandex.ru:synchronized_no_beacon; layout-config={screen_height:960,screen_width:1708,win_width:1686.25,win_height:273.75}; _arsus=true; count-visits=3; _ym_uid=1701421443933204740; _ym_d=1701421641; _ym_isad=2; yaPassportTryAutologin=1; popups-dr-shown-count=1; fp=b8b930ff929cc40b202f0caaeb2af241^%^7C1701421456264; cycada=P7mdXXLuSRcHx26DoWg4gyoGuewZ52Ht1fvNM5rDEfo=; autoru-visits-count=1; autoru-visits-session-unexpired=1',
+        'Upgrade-Insecure-Requests': '1',
+        'Sec-Fetch-Dest': 'document',
+        'Sec-Fetch-Mode': 'navigate',
+        'Sec-Fetch-Site': 'none',
+        'Sec-Fetch-User': '?1',
+        # Requests doesn't support trailers
+        # 'TE': 'trailers',
+    }
+
+    session = HTMLSession()
+    r = session.get(url_, cookies=cookies, headers=headers)
+    r.html.encoding = 'utf-8'
+    soup = BeautifulSoup(r.html.text, "lxml")
+
+    return soup
 
 
 async def get_ads_list(rand_proxy):
@@ -163,52 +229,76 @@ async def get_ads_list(rand_proxy):
 async def get_property():
     with open('data_list.pickle', 'rb') as file_:
         data_list = pickle.load(file_)
-        data_list = data_list[170:]
+        data_list = data_list[502:]
 
-    cnt = 171
+    cnt = 503
     for link in data_list:
         rand_proxy = random.choice(PROXY_LIST)
         mark = link[0].split(' ')[0]
         model = ' '.join(link[0].split(' ')[1:])
-        response = await get_property_settings(link[1], rand_proxy)
-        soup = BeautifulSoup(response, "lxml")
-        html_year = soup.find('li', class_='CardInfoRow CardInfoRow_year')
-        year = html_year.find_all('span', class_='CardInfoRow__cell')[1].get_text(strip=True) if html_year else 0
-        # if year != '2023':
-        #     continue
-        city = soup.find('span', class_='MetroListPlace__regionName MetroListPlace_nbsp').get_text(strip=True).replace(',', '')
+        # response = await get_property_settings(link[1], rand_proxy)
+        soup = useragent_soup(link[1])
+        # soup = BeautifulSoup(response, "lxml")
+        try:
+            dirty_text = soup.find(text=lambda t: 'Год выпуска' in t)
+        except Exception:
+            dirty_text = 0
+        try:
+            price = dirty_text.text.split('Цена с НДС')[0].split('\n')[-2].replace(' ', '').replace('₽', '')
+        except Exception:
+            price = 0
+        try:
+            year = dirty_text.text.split('выпуска')[1].split(' ')[0].split('\n')[0]
+        except Exception:
+            year = 0
+        if year != '2023':
+            continue
+        try:
+            load = dirty_text.text.split('Г/подъёмность')[1].split(' ')[0].split('\n')[0].replace(' т', '')
+        except Exception:
+            load = 0
+        try:
+            brake = dirty_text.text.split('тормозов')[1].split(' ')[0].split('\n')[0]
+        except Exception:
+            brake = 0
+        try:
+            suspension = dirty_text.text.split('подвески')[1].split(' ')[0].split('\n')[0]
+        except Exception:
+            suspension = 0
+        try:
+            type_ = dirty_text.text.split('прицепа')[1].split('\n')[0]
+        except Exception:
+            type_ = 0
+        try:
+            axis = dirty_text.text.split('Количество осей')[1].split('\n')[0]
+        except Exception:
+            axis = 0
+        try:
+            dirty_city = dirty_text.text.split('Цена с НДС')[1].split('\n')[3]
+            city = re.findall('[А-Я][^А-Я]*', dirty_city)[0]
+        except Exception:
+            city = 0
         try:
             region = get_location(city)
         except Exception:
             region = city
-        price = soup.find('span', class_='OfferPriceCaption__price').get_text(strip=True).replace(' ', '').replace('₽', '')
-        html_type = soup.find('li', class_='CardInfoRow CardInfoRow_trailerType')
-        type_ = html_type.find_all('span', class_='CardInfoRow__cell')[1].get_text(strip=True) if html_type else 0
-        html_load = soup.find('li', class_='CardInfoRow CardInfoRow_loading')
-        load = html_load.find_all('span', class_='CardInfoRow__cell')[1].get_text(strip=True) if html_load else 0
-        html_axis = soup.find('li', class_='CardInfoRow CardInfoRow_axis')
-        axis = html_axis.find_all('span', class_='CardInfoRow__cell')[1].get_text(strip=True) if html_axis else 0
-        html_brake = soup.find('li', class_='CardInfoRow CardInfoRow_breakType')
-        brake = html_brake.find_all('span', class_='CardInfoRow__cell')[1].get_text(strip=True) if html_brake else 0
-        html_suspension = soup.find('li', class_='CardInfoRow CardInfoRow_suspensionType')
-        suspension = html_suspension.find_all('span', class_='CardInfoRow__cell')[1].get_text(strip=True) if html_suspension else 0
+
         up_axis = 'нет'
-        text_elements = soup.find_all(string=True)
-        text = 'одъёмная ось'
-        for element in text_elements:
-            if text in element:
+        try:
+            if 'одъёмная ось' in dirty_text:
                 up_axis = 'есть'
-                break
+        except Exception:
+            region = city
         save_in_excel(year, type_, mark, model, suspension, brake, load, axis, up_axis, price, region, link[1], cnt)
         print(cnt)
         cnt += 1
 
 
 if __name__ == "__main__":
-    rand_proxy = random.choice(PROXY_LIST)
+    # rand_proxy = random.choice(PROXY_LIST)
 
-    # asyncio.run(get_property())
-    asyncio.run(get_ads_list(rand_proxy))
+    asyncio.run(get_property())
+    # asyncio.run(get_ads_list(rand_proxy))
     # with open('data_list.pickle', 'rb') as file_:
     #     data_list = pickle.load(file_)
     # print(data_list)

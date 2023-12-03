@@ -7,7 +7,6 @@ import openpyxl
 from fake_useragent import UserAgent
 
 from location import get_location
-from selenium_master import html_obj
 
 
 with open("proxy.txt") as file:
